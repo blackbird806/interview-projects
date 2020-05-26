@@ -21,7 +21,7 @@ template<typename T>
 double quickselect(typename std::vector<T>::iterator first, typename std::vector<T>::iterator last, size_t k)
 {
 	size_t const len = std::distance(first, last);
-	
+
 	if (len == 1)
 	{
 		assert(k == 0);
@@ -30,7 +30,7 @@ double quickselect(typename std::vector<T>::iterator first, typename std::vector
 
 	int const pivot = first[rand() % len];
 
-	// partition the vector in order to regroup all elem that are less than the pivot 
+	// partition the vector in order to regroup all elem that are less than the pivot
 	auto const low_end = std::partition(first, last, [pivot](auto const& e)
 	{
 		return e < pivot;
@@ -52,10 +52,10 @@ double quickselect(typename std::vector<T>::iterator first, typename std::vector
 	if (k < low_size + pivot_size)
 		 return *low_end;
 
-	return quickselect<T>(up, last, k - low_size - pivot_size);	
+	return quickselect<T>(up, last, k - low_size - pivot_size);
 }
 
-// get split view of n elements of vec 
+// get split view of n elements of vec
 template<typename T>
 auto chunk_vector(std::vector<T>& vec, unsigned int n)
 {
@@ -68,7 +68,7 @@ auto chunk_vector(std::vector<T>& vec, unsigned int n)
 		std::pair<
 			typename std::vector<T>::iterator,
 			typename std::vector<T>::iterator
-			> 
+			>
 		> chunked_view;
 
 	chunked_view.reserve(n);
@@ -82,6 +82,10 @@ auto chunk_vector(std::vector<T>& vec, unsigned int n)
 	return chunked_view;
 }
 
+
+template<typename T>
+double median(const std::vector<T>& numbers);
+
 // attempt to implement determinist O(n) quickselect algorithm
 template<typename T>
 double quickselectOn(std::vector<T>& numbers, size_t k)
@@ -90,15 +94,15 @@ double quickselectOn(std::vector<T>& numbers, size_t k)
 
 	if (numbers.size() < 5)
 		return quickselect<T>(numbers.begin(), numbers.end(), k);
-	
+
 	auto chunks = chunk_vector(numbers, 5);
 
 	// remove chunks that are not full
 	chunks.erase(
-		std::remove_if(chunks.begin(), chunks.end(), 
+		std::remove_if(chunks.begin(), chunks.end(),
 		[](auto const& e){
 			return std::distance(e.first, e.second) < 5;
-		}), 
+		}),
 		chunks.end());
 
 	std::vector<double> medians;
@@ -118,17 +122,17 @@ double quickselectOn(std::vector<T>& numbers, size_t k)
 template<typename T>
 double median(const std::vector<T>& numbers)
 {
-	static_assert(is_arithmetic_v<T>);
+	static_assert(std::is_arithmetic_v<T>);
 
 	size_t const array_size = std::size(numbers);
-	
+
 	if(array_size == 0)
         throw std::invalid_argument("No median for empty vector");
-    
+
 	bool const is_odd = array_size % 2 == 1;
 
 	std::vector<T> cpy(numbers);
-	
+
 	if (is_odd)
 		return quickselectOn(cpy, array_size / 2);
 
