@@ -48,7 +48,7 @@ int quickselect(R)(R numbers, size_t nth)
     if (nth < ranges.lower.length)
         return quickselect(ranges.lower, nth);
     if (nth < ranges.lower.length + ranges.pivots.length)
-        return quickselect(ranges.pivots, nth - ranges.lower.length);
+        return ranges.pivots[0];
 
     return quickselect(ranges.upper, nth - ranges.pivots.length - ranges.lower.length);
 } 

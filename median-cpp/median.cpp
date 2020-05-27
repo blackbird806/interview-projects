@@ -27,10 +27,11 @@ double median(const std::vector<int>& numbers) {
 
 // quickselect algorithm, average complexity is O(n) worst case is O(n log n)
 // based on: https://rcoh.me/posts/linear-time-median-finding/
+// quickselect find the nth smallest element in the range [first .. last]
 double quickselect(std::vector<int>::iterator first, std::vector<int>::iterator last, size_t nth)
 {
 	auto const len = std::distance(first, last);
-
+	
 	if (len == 1)
 	{
 		assert(nth == 0);
@@ -98,7 +99,8 @@ double median(std::vector<int> const& numbers) {
 	if (is_odd)
 	// if the array is odd, the median is the {array_size / 2} smallest element of the array
 		return quickselect(cpy.begin(), cpy.end(), array_size / 2);
-	
+
+	// else it is the average between the {array_size / 2} and the {array_size / 2 - 1} smallests elements of the array
 	return 0.5 * 
 		 (	quickselect(cpy.begin(), cpy.end(), array_size / 2 - 1) + 
 			quickselect(cpy.begin(), cpy.end(), array_size / 2)	);
@@ -122,7 +124,7 @@ double median(std::vector<int> const& numbers) {
 	
 	// if the array is odd, the median is the {array_size / 2} smallest element of the array
 
-	// according to the standard :
+	// according to the std::nth_element doc :
 	// "The element pointed at by nth is changed to whatever element would occur in that position if [first, last) were sorted. "
 	// see: https://en.cppreference.com/w/cpp/algorithm/nth_element
 	// so if the array length is odd the median is placed at {cpy.begin() + array_size / 2}
