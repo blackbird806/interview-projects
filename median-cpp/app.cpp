@@ -66,7 +66,7 @@ void run() {
         const auto end = clock::now();
         const auto diff = end - start;
         const auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(diff);
-        times[i] = ms.count();
+        times[i] = static_cast<int>(ms.count());
     }
 
     const auto min = std::min_element(times.cbegin(), times.cend());
