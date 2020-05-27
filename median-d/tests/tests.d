@@ -1,6 +1,5 @@
 import unit_threaded;
-import median: median;
-
+import my_median: median;
 
 @("empty")
 unittest {

@@ -1,6 +1,10 @@
+
 int main() {
+    static import median;
+    static import my_median;
     try {
-        run;
+        run!(median.median);
+        run!(my_median.median);
         return 0;
     } catch(Exception _) {
         return 1;
@@ -8,8 +12,7 @@ int main() {
 }
 
 
-void run() {
-    import median: median;
+void run(alias median)() {
     import std.random: Random, uniform;
     import std.array: array;
     import std.range: repeat, takeExactly;
