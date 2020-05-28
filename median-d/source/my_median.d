@@ -1,10 +1,16 @@
 module my_median;
 
 import std.range.primitives: isInputRange, ElementType;
-import std.traits: Unqual;
+import std.traits: Unqual, isNumeric;
+
+bool isOdd(T)(T num)
+    if (isNumeric!T)
+{
+    return num % 1 == 1;
+}
 
 // this is almost the same implementation as in c++
-int quickselect(R)(R numbers, size_t nth)
+auto quickselect(R)(R numbers, size_t nth)
     if(isInputRange!R && is(Unqual!(ElementType!R) == int))
 {
     import std.typecons: Tuple;
@@ -29,13 +35,16 @@ int quickselect(R)(R numbers, size_t nth)
         // according to the doc partition3 isn't stable yet
         // see: https://dlang.org/phobos/std_algorithm_sorting.html#partition3
         const int pivot = choice(numbers);
-        const partitionRanges ranges = numbers.partition3(pivot);
+        partitionRanges ranges = numbers.partition3(pivot);
     }
     else
     {
         import std.algorithm.sorting: pivotPartition;
         import std.random: uniform;
-
+        
+        // the main weakness of this algorithm is the random pivot
+        // if we're unlucky we can pick only bad pivots (pivots that does not split evenly the array)
+        // this may result in worse complexity
         size_t pivotIndex = uniform(0, numbers.length);
         const size_t newPivotIndex = numbers.pivotPartition(pivotIndex);
         partitionRanges ranges;
@@ -63,9 +72,8 @@ double median(R)(R numbers)
         throw new Exception("No median for empty range");
 
     auto arr = numbers.array.dup;
-    const bool isOdd = arr.length % 2;
 
-    if (isOdd)
+    if (arr.length.isOdd)
         return quickselect(arr, arr.length / 2);
 
     return 0.5 * (quickselect(arr, arr.length / 2) + quickselect(arr, arr.length / 2 - 1));

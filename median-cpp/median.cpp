@@ -5,7 +5,7 @@
 #include <random>
 #include <cassert>
 
-#define MY_QUICKSELECT
+// #define MY_QUICKSELECT
 
 #ifdef SORT_MEDIAN
 
@@ -109,7 +109,7 @@ double median(std::vector<int> const& numbers) {
 #else
 
 // this implementation uses std::nth_element which have O(n) average complexity too 
-
+// fastest function so far
 double median(std::vector<int> const& numbers) {
 
 	size_t const array_size = std::size(numbers);
