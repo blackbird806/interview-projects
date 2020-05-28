@@ -6,7 +6,7 @@ import std.traits: Unqual, isNumeric;
 bool isOdd(T)(T num)
     if (isNumeric!T)
 {
-    return num % 1 == 1;
+    return num % 2 == 1;
 }
 
 // this is almost the same implementation as in c++
