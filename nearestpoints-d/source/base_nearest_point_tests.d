@@ -59,3 +59,27 @@ unittest {
 	assert(rslt.length == 7);
 	assert(rslt.map!(it => distance(center, it)).isSorted);
 }
+
+unittest {
+    const points = [
+        Point(0, 10),
+        Point(10, 0),
+        Point(10, 10),
+        Point(-10, -10),
+        Point(1, 0),
+        Point(0, 1),
+        Point(-1, 0),
+        Point(0, 1),
+    ];
+    const center = Point(0.0, 0.0);
+    const nearest = nearestPoint(points, center, 4);
+    const expected = [
+        Point(1, 0),
+        Point(0, 1),
+        Point(-1, 0),
+        Point(0, 1),
+    ];
+
+    import std.conv: text;
+    assert(nearest == expected, nearest.text);
+}

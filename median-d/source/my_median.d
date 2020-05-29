@@ -50,7 +50,7 @@ auto quickselect(R)(R numbers, size_t nth)
         partitionRanges ranges;
         ranges.lower = numbers[0 .. newPivotIndex];
         // since without partition3 finding the pivots range is not trivial we will ignore it
-        // the algo works fine without (it may be a little bit slower though)
+        // this method works fine without (it may be a little bit slower though)
         ranges.upper = numbers[newPivotIndex .. $];
     }
 

@@ -18,13 +18,6 @@ void runBenchmark(uint iterations, uint numPoints)
 		const auto results = benchmark!({ nearestPointAppender(pointRng(7, 1338), center, numPoints); })(iterations);
 		writeln("nearestPointAppender: ", results[0]);
 	}
-	{
-		import my_nearest_point;
-		
-		const auto center = Point(0.0, 0.0);
-		const auto results = benchmark!({ nearestPointHeap(pointRng(7, 1338), center, numPoints); })(iterations);
-		writeln("nearestPointHeapify: ", results[0]);
-	}
 }
 
 void main() {

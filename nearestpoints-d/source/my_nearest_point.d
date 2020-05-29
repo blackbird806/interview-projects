@@ -7,16 +7,19 @@ import std.math : approxEqual;
 import std.random;
 import std.stdio;
 
-struct Point {
+struct Point 
+{
 	double x;
 	double y;
 
-	bool opEquals(const Point other) const {
+	bool opEquals(const Point other) const 
+	{
 		return approxEqual(this.x, other.x) && approxEqual(this.y, other.y);
 	}
 }
 
-struct PointDis {
+struct PointDis 
+{
 	Point p;
 	double d;
 
@@ -32,85 +35,86 @@ struct PointDis {
 // the same code is produced for the three kinds of pow2 impl (on ldc 1.20, gdc 9.2)
 // see: https://godbolt.org/z/vPP_4V
 // however on dmd 2.089.0 the pow call generate more code and a function call (see: https://godbolt.org/z/iPEXe-)
-double distance2(const(Point) a, const(Point) b) {
+double distance2(const(Point) a, const(Point) b) 
+{
 	return (a.x - b.x)^^2 + (a.y - b.y)^^2;
 }
 
-double distance(const(Point) a, const(Point) b) {
+double distance(const(Point) a, const(Point) b) 
+{
 	import std.math : sqrt;
 	return sqrt(distance2(a, b));
 }
 
 // base algorithm is O(n log n) because of sort func (see: https://dlang.org/phobos/std_algorithm_sorting.html#sort)
 
-Point[] nearestPointAppender(Input)(Input input, const(Point) center, size_t n) {
-	import std.algorithm.sorting : sort;
-	import std.array : array, appender, Appender;
+Point[] nearestPointAppender(Input)(Input input, const(Point) center, size_t n) 
+{
+	import std.algorithm: sort;
+	import std.array: array, appender, Appender;
+	import std.range: assumeSorted, SearchPolicy;
 
-	// using appender instead of regular appending allow more efficient memory allocation
+	// using appender instead of regular array allow more efficient memory allocation
 	auto app = appender!(PointDis[]);
 
-	// idk why but using reserve result in worse performances
-	// app.reserve(n);
-
-	foreach(Point it; input) 
+	bool sorted = false;
+	foreach(Point it; input)
 	{
-		if(app[].length >= n)
-			break; 
-		
 		PointDis pd = PointDis(it, distance2(center, it));
-		app ~= pd;
+
+		if(app[].length < n)
+		{
+			app ~= pd;
+		}
+		else
+		{
+			// sort array only once
+			if (!sorted)
+			{
+				sort(app[]);
+				sorted = true;
+			}
+
+			// we can do binary search since the array is already sorted 
+			auto greaterRange = assumeSorted(app[]).upperBound!(SearchPolicy.binarySearch)(pd);
+			if (greaterRange.length > 0)
+				greaterRange.front = pd;
+		}
 	}
+
+	if (!sorted)
+		sort(app[]);
 	
-	sort!((a, b) => a.d < b.d)(app[]);
 	return app[].map!(it => it.p).array;
 }
 
-Point[] nearestPointHeap(Input)(Input input, const(Point) center, size_t n) {
-	import std.array : array;
-	import std.container;
-
-	// by using a binary heap we can avoid a call to sort
-	// we should now be in O(n) complexity instead of O(n log n)
-	// however we're still slower than Appender version
-
-	PointDis[] tmp;
-	auto app = heapify!"a > b"(tmp);
-	
-	foreach(Point it; input) 
-	{
-		if(app.length >= n)
-			break; 
-		
-		PointDis pd = PointDis(it, distance2(center, it));
-		app.insert(pd);
-	}
-	
-	return app.map!(it => it.p).array;
-}
-
-Point rndPoint(ref Random rnd) {
+Point rndPoint(ref Random rnd) 
+{
 	return Point(uniform(-20.0, 20.0, rnd), uniform(-20.0, 20.0, rnd));
 }
 
-struct PointRng {
+struct PointRng 
+{
 	long cnt;
 	Point front;
 	Random rnd;
 	
 	// using @property is not recommended
 	// see: https://dlang.org/spec/function.html#property-functions
-	bool empty() const {
+	bool empty() const 
+	{
 		return this.cnt <= 0;
 	}
 
-	void popFront() {
+	void popFront() 
+	{
 		this.front = rndPoint(this.rnd);
 		this.cnt--;
 	}
 }
 
-PointRng pointRng(long cnt, uint seed) {
+PointRng pointRng(long cnt, uint seed) 
+{
 	PointRng ret;
 	ret.rnd = Random(seed);
 	ret.cnt = cnt;
